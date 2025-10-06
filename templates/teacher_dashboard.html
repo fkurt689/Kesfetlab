@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="bg-gradient-to-r from-purple-600 to-blue-600 rounded-2xl p-8 mb-8 text-white">
+    <h1 class="text-3xl font-bold mb-2">Öğretmen Dashboard 👨‍🏫</h1>
+    <p class="text-purple-100">Quiz'lerinizi yönetin ve öğrenci performansını takip edin</p>
+</div>
+
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+    <div class="bg-white rounded-xl p-6 shadow-lg">
+        <div class="text-4xl mb-2">👥</div>
+        <div class="text-3xl font-bold text-gray-800">{{ total_students }}</div>
+        <div class="text-gray-600">Toplam Öğrenci</div>
+    </div>
+    
+    <div class="bg-white rounded-xl p-6 shadow-lg">
+        <div class="text-4xl mb-2">📝</div>
+        <div class="text-3xl font-bold text-gray-800">{{ total_quizzes }}</div>
+        <div class="text-gray-600">Quiz'lerim</div>
+    </div>
+    
+    <div class="bg-white rounded-xl p-6 shadow-lg">
+        <div class="text-4xl mb-2">✅</div>
+        <div class="text-3xl font-bold text-gray-800">{{ total_attempts }}</div>
+        <div class="text-gray-600">Toplam Deneme</div>
+    </div>
+</div>
+
+<div class="bg-white rounded-xl p-6 shadow-lg mb-8">
+    <h2 class="text-2xl font-bold mb-4">📊 Quiz'lerim</h2>
+    {% if my_quizzes %}
+        <div class="space-y-3">
+            {% for quiz in my_quizzes %}
+            <div class="border rounded-lg p-4">
+                <div class="flex justify-between items-center">
+                    <div>
+                        <h3 class="font-bold">{{ quiz.title }}</h3>
+                        <p class="text-sm text-gray-600">{{ quiz.attempt_count }} deneme - Ort: %{{ quiz.avg_score|floatformat:1 }}</p>
+                    </div>
+                    <a href="/admin/main/quiz/{{ quiz.id }}/change/" class="bg-purple-600 text-white px-4 py-2 rounded-lg text-sm">
+                        Düzenle
+                    </a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p class="text-center text-gray-500 py-8">Henüz quiz oluşturmadınız</p>
+    {% endif %}
+</div>
+
+<div class="bg-white rounded-xl p-6 shadow-lg">
+    <h2 class="text-2xl font-bold mb-4">📅 Son Denemeler</h2>
+    {% if recent_attempts %}
+        <div class="space-y-3">
+            {% for attempt in recent_attempts %}
+            <div class="border rounded-lg p-3 flex justify-between items-center">
+                <div>
+                    <p class="font-medium">{{ attempt.user.username }} - {{ attempt.quiz.title }}</p>
+                    <p class="text-sm text-gray-500">{{ attempt.completed_at|date:"d M Y, H:i" }}</p>
+                </div>
+                <span class="{% if attempt.is_passed %}bg-green-100 text-green-700{% else %}bg-red-100 text-red-700{% endif %} px-3 py-1 rounded-full text-sm font-bold">
+                    %{{ attempt.percentage|floatformat:0 }}
+                </span>
+            </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p class="text-center text-gray-500 py-8">Henüz deneme yok</p>
+    {% endif %}
+</div>
+{% endblock %}

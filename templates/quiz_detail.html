@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto">
+    <div class="bg-white rounded-xl p-8 shadow-lg">
+        <h1 class="text-3xl font-bold mb-4">{{ quiz.title }}</h1>
+        <p class="text-gray-600 mb-6">{{ quiz.description }}</p>
+        
+        <div class="bg-gray-50 rounded-lg p-4 mb-6">
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <span class="text-gray-600">Soru Sayısı:</span>
+                    <span class="font-bold">{{ question_count }}</span>
+                </div>
+                <div>
+                    <span class="text-gray-600">Zorluk:</span>
+                    <span class="font-bold">{{ quiz.get_difficulty_display }}</span>
+                </div>
+                <div>
+                    <span class="text-gray-600">Geçme Notu:</span>
+                    <span class="font-bold">%{{ quiz.passing_score }}</span>
+                </div>
+                <div>
+                    <span class="text-gray-600">Kazanılacak Puan:</span>
+                    <span class="font-bold text-yellow-600">⭐ {{ quiz.points_reward }}</span>
+                </div>
+            </div>
+        </div>
+
+        {% if previous_attempts %}
+        <div class="mb-6">
+            <h3 class="font-bold mb-2">📊 Önceki Denemeleriniz:</h3>
+            <div class="space-y-2">
+                {% for attempt in previous_attempts %}
+                <div class="flex justify-between items-center bg-gray-50 p-3 rounded">
+                    <span class="text-sm">{{ attempt.completed_at|date:"d M Y, H:i" }}</span>
+                    <span class="{% if attempt.is_passed %}bg-green-100 text-green-700{% else %}bg-red-100 text-red-700{% endif %} px-3 py-1 rounded-full text-sm font-bold">
+                        %{{ attempt.percentage|floatformat:0 }}
+                    </span>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+        
+        <form method="POST">
+            {% csrf_token %}
+            <button type="submit" class="w-full bg-gradient-to-r from-purple-600 to-blue-600 text-white py-4 rounded-lg font-bold text-lg hover:shadow-xl transition">
+                Quiz'i Başlat 🚀
+            </button>
+        </form>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,150 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto">
+    <!-- Header -->
+    <div class="text-center mb-12">
+        <div class="text-8xl mb-6">🚀</div>
+        <h1 class="text-5xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 text-transparent bg-clip-text mb-4">
+            Hakkımızda
+        </h1>
+        <p class="text-xl text-gray-600">
+            Çocuklar için eğlenceli ve öğretici quiz platformu
+        </p>
+    </div>
+
+    <!-- Misyon -->
+    <div class="bg-white rounded-2xl shadow-lg p-8 mb-8">
+        <div class="flex items-center mb-4">
+            <span class="text-5xl mr-4">🎯</span>
+            <h2 class="text-3xl font-bold text-gray-800">Misyonumuz</h2>
+        </div>
+        <p class="text-gray-700 text-lg leading-relaxed">
+            KesfeT Lab, çocukların algoritma ve kodlama dünyasına eğlenceli bir şekilde adım atmalarını sağlayan 
+            interaktif bir öğrenme platformudur. Amacımız, öğrenmeyi oyunlaştırarak çocukların teknoloji ile 
+            dostça bir ilişki kurmalarını ve problem çözme becerilerini geliştirmelerini desteklemektir.
+        </p>
+    </div>
+
+    <!-- Özellikler -->
+    <div class="bg-white rounded-2xl shadow-lg p-8 mb-8">
+        <h2 class="text-3xl font-bold text-gray-800 mb-6 flex items-center">
+            <span class="text-5xl mr-4">✨</span>
+            Özelliklerimiz
+        </h2>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="border-2 border-purple-200 rounded-xl p-6 hover:shadow-lg transition">
+                <div class="text-4xl mb-3">📝</div>
+                <h3 class="font-bold text-xl mb-2 text-purple-600">İnteraktif Quiz'ler</h3>
+                <p class="text-gray-600">
+                    Çoktan seçmeli, doğru/yanlış ve sürükle-bırak soru tipleriyle eğlenceli öğrenme deneyimi.
+                </p>
+            </div>
+
+            <div class="border-2 border-blue-200 rounded-xl p-6 hover:shadow-lg transition">
+                <div class="text-4xl mb-3">🏆</div>
+                <h3 class="font-bold text-xl mb-2 text-blue-600">Rozet Sistemi</h3>
+                <p class="text-gray-600">
+                    Başarılarını rozetlerle ödüllendir, koleksiyonunu büyüt ve motivasyonunu artır!
+                </p>
+            </div>
+
+            <div class="border-2 border-green-200 rounded-xl p-6 hover:shadow-lg transition">
+                <div class="text-4xl mb-3">📊</div>
+                <h3 class="font-bold text-xl mb-2 text-green-600">İlerleme Takibi</h3>
+                <p class="text-gray-600">
+                    Öğrenci ve veliler için detaylı istatistikler ve grafiklerle gelişimi izle.
+                </p>
+            </div>
+
+            <div class="border-2 border-yellow-200 rounded-xl p-6 hover:shadow-lg transition">
+                <div class="text-4xl mb-3">👨‍👩‍👧</div>
+                <h3 class="font-bold text-xl mb-2 text-yellow-600">Veli Paneli</h3>
+                <p class="text-gray-600">
+                    Veliler çocuklarının gelişimini kolayca takip edebilir ve destek olabilir.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Nasıl Çalışır -->
+    <div class="bg-gradient-to-r from-purple-100 to-blue-100 rounded-2xl p-8 mb-8">
+        <h2 class="text-3xl font-bold text-gray-800 mb-6 flex items-center">
+            <span class="text-5xl mr-4">🎮</span>
+            Nasıl Çalışır?
+        </h2>
+        
+        <div class="space-y-4">
+            <div class="flex items-start space-x-4">
+                <div class="bg-purple-600 text-white rounded-full w-10 h-10 flex items-center justify-center font-bold text-lg flex-shrink-0">
+                    1
+                </div>
+                <div>
+                    <h3 class="font-bold text-lg mb-1">Kayıt Ol</h3>
+                    <p class="text-gray-700">Ücretsiz hesap oluştur ve hemen başla!</p>
+                </div>
+            </div>
+
+            <div class="flex items-start space-x-4">
+                <div class="bg-purple-600 text-white rounded-full w-10 h-10 flex items-center justify-center font-bold text-lg flex-shrink-0">
+                    2
+                </div>
+                <div>
+                    <h3 class="font-bold text-lg mb-1">Quiz Seç</h3>
+                    <p class="text-gray-700">Seviyene uygun quiz'leri bul ve çözmeye başla.</p>
+                </div>
+            </div>
+
+            <div class="flex items-start space-x-4">
+                <div class="bg-purple-600 text-white rounded-full w-10 h-10 flex items-center justify-center font-bold text-lg flex-shrink-0">
+                    3
+                </div>
+                <div>
+                    <h3 class="font-bold text-lg mb-1">Puan Kazan</h3>
+                    <p class="text-gray-700">Doğru cevaplarla puan topla ve rozetler kazan!</p>
+                </div>
+            </div>
+
+            <div class="flex items-start space-x-4">
+                <div class="bg-purple-600 text-white rounded-full w-10 h-10 flex items-center justify-center font-bold text-lg flex-shrink-0">
+                    4
+                </div>
+                <div>
+                    <h3 class="font-bold text-lg mb-1">İlerle ve Öğren</h3>
+                    <p class="text-gray-700">Seviyeni yükselt, liderlik tablosunda yüksel!</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- İstatistikler -->
+    <div class="bg-white rounded-2xl shadow-lg p-8 mb-8">
+        <h2 class="text-3xl font-bold text-gray-800 mb-6 text-center">📈 Platform İstatistikleri</h2>
+        
+        <div class="grid grid-cols-3 gap-6">
+            <div class="text-center">
+                <div class="text-5xl font-bold text-purple-600 mb-2">{{ total_students }}+</div>
+                <div class="text-gray-600">Öğrenci</div>
+            </div>
+            <div class="text-center">
+                <div class="text-5xl font-bold text-blue-600 mb-2">{{ total_quizzes }}+</div>
+                <div class="text-gray-600">Quiz</div>
+            </div>
+            <div class="text-center">
+                <div class="text-5xl font-bold text-green-600 mb-2">{{ total_attempts }}+</div>
+                <div class="text-gray-600">Tamamlanan</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CTA -->
+    <div class="bg-gradient-to-r from-purple-600 to-blue-600 rounded-2xl p-12 text-center text-white">
+        <h2 class="text-4xl font-bold mb-4">Hemen Başla! 🚀</h2>
+        <p class="text-xl mb-8">Öğrenme macerana bugün başla, eğlenceli quiz'lerle bilgini test et!</p>
+        <a href="{% url 'register' %}" class="bg-white text-purple-600 px-10 py-4 rounded-xl font-bold text-lg inline-block hover:shadow-2xl transition transform hover:scale-105">
+            Ücretsiz Kayıt Ol →
+        </a>
+    </div>
+</div>
+{% endblock %}

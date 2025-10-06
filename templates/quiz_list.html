@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1 class="text-4xl font-bold mb-8">📝 Quiz'ler</h1>
+
+{% if quizzes %}
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+    {% for quiz in quizzes %}
+    <div class="bg-white rounded-xl p-6 shadow-lg">
+        <h3 class="text-xl font-bold mb-2">{{ quiz.title }}</h3>
+        <p class="text-gray-600 mb-4">{{ quiz.description }}</p>
+        <a href="{% url 'quiz_detail' quiz.id %}" class="bg-purple-600 text-white px-6 py-2 rounded-lg inline-block">
+            Başla →
+        </a>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<p class="text-center text-gray-500 py-16">Henüz quiz yok</p>
+{% endif %}
+{% endblock %}

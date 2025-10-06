@@ -1,0 +1,155 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}KesfetBot - AI Asistan{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <div class="max-w-4xl mx-auto">
+        
+        <!-- Header -->
+        <div class="bg-gradient-to-r from-purple-600 to-blue-600 rounded-t-xl p-6 text-white">
+            <h1 class="text-3xl font-bold">🤖 KesfetBot</h1>
+            <p class="text-purple-100 mt-2">Senin AI Eğitim Asistanın</p>
+        </div>
+
+        <!-- Chat Container -->
+        <div class="bg-white rounded-b-xl shadow-lg p-6">
+            
+            <!-- Chat History -->
+            <div id="chat-box" class="h-96 overflow-y-auto mb-6 space-y-4 border border-gray-200 rounded-lg p-4 bg-gray-50">
+                {% for chat in chat_history reversed %}
+                    <!-- User Message -->
+                    <div class="flex justify-end">
+                        <div class="bg-blue-500 text-white rounded-lg px-4 py-2 max-w-xs">
+                            <p class="text-sm">{{ chat.message }}</p>
+                            <span class="text-xs opacity-75">{{ chat.created_at|date:"H:i" }}</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Bot Response -->
+                    <div class="flex justify-start">
+                        <div class="bg-gray-200 text-gray-800 rounded-lg px-4 py-2 max-w-md">
+                            <p class="text-sm">{{ chat.response }}</p>
+                            <span class="text-xs opacity-75">{{ chat.created_at|date:"H:i" }}</span>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+
+            <!-- Input Form -->
+            <form id="chat-form" class="flex gap-2">
+                {% csrf_token %}
+                <input 
+                    type="text" 
+                    id="user-message" 
+                    name="message"
+                    placeholder="Bir şey sor... (örn: Python'da for döngüsü nasıl çalışır?)" 
+                    class="flex-1 border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    required
+                >
+                <button 
+                    type="submit" 
+                    id="send-btn"
+                    class="bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-lg font-semibold transition duration-200"
+                >
+                    Gönder
+                </button>
+            </form>
+
+            <!-- Error Display -->
+            <div id="error-msg" class="mt-4 text-red-600 text-sm hidden"></div>
+            
+        </div>
+    </div>
+</div>
+
+<script>
+document.getElementById('chat-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const messageInput = document.getElementById('user-message');
+    const message = messageInput.value.trim();
+    const sendBtn = document.getElementById('send-btn');
+    const errorMsg = document.getElementById('error-msg');
+    const chatBox = document.getElementById('chat-box');
+    
+    // Boş mesaj kontrolü
+    if (!message) {
+        errorMsg.textContent = '❌ Lütfen bir mesaj yazın!';
+        errorMsg.classList.remove('hidden');
+        return;
+    }
+    
+    // Hata mesajını gizle
+    errorMsg.classList.add('hidden');
+    
+    // Kullanıcı mesajını ekle
+    const userMsgDiv = document.createElement('div');
+    userMsgDiv.className = 'flex justify-end';
+    userMsgDiv.innerHTML = `
+        <div class="bg-blue-500 text-white rounded-lg px-4 py-2 max-w-xs">
+            <p class="text-sm">${message}</p>
+        </div>
+    `;
+    chatBox.appendChild(userMsgDiv);
+    
+    // Loading göster
+    const loadingDiv = document.createElement('div');
+    loadingDiv.className = 'flex justify-start';
+    loadingDiv.innerHTML = `
+        <div class="bg-gray-200 text-gray-800 rounded-lg px-4 py-2">
+            <p class="text-sm">🤖 KesfetBot düşünüyor...</p>
+        </div>
+    `;
+    chatBox.appendChild(loadingDiv);
+    chatBox.scrollTop = chatBox.scrollHeight;
+    
+    // Input'u temizle ve butonu devre dışı bırak
+    messageInput.value = '';
+    sendBtn.disabled = true;
+    sendBtn.textContent = 'Gönderiliyor...';
+    
+    // AJAX ile gönder
+    fetch('/chatbot/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+        },
+        body: `message=${encodeURIComponent(message)}`
+    })
+    .then(response => response.json())
+    .then(data => {
+        // Loading'i kaldır
+        chatBox.removeChild(loadingDiv);
+        
+        if (data.success) {
+            // Bot cevabını ekle
+            const botMsgDiv = document.createElement('div');
+            botMsgDiv.className = 'flex justify-start';
+            botMsgDiv.innerHTML = `
+                <div class="bg-gray-200 text-gray-800 rounded-lg px-4 py-2 max-w-md">
+                    <p class="text-sm">${data.response}</p>
+                </div>
+            `;
+            chatBox.appendChild(botMsgDiv);
+        } else {
+            errorMsg.textContent = '❌ ' + (data.error || 'Bir hata oluştu!');
+            errorMsg.classList.remove('hidden');
+        }
+        
+        chatBox.scrollTop = chatBox.scrollHeight;
+    })
+    .catch(error => {
+        chatBox.removeChild(loadingDiv);
+        errorMsg.textContent = '❌ Bağlantı hatası: ' + error.message;
+        errorMsg.classList.remove('hidden');
+    })
+    .finally(() => {
+        sendBtn.disabled = false;
+        sendBtn.textContent = 'Gönder';
+    });
+});
+</script>
+{% endblock %}

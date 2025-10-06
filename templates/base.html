@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}KesfeT Lab - Çocuklar için Algoritma{% endblock %}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <script>
+    // Tema kontrolü - hem giriş yapmış hem yapmamış kullanıcılar için
+    function initTheme() {
+        {% if user.is_authenticated %}
+            // Giriş yapmış kullanıcı - veritabanından al
+            const isDark = {{ user.dark_mode|yesno:"true,false" }};
+            if (isDark) {
+                document.documentElement.classList.add('dark-theme');
+                localStorage.setItem('theme', 'dark');
+            } else {
+                localStorage.setItem('theme', 'light');
+            }
+        {% else %}
+            // Giriş yapmamış kullanıcı - localStorage'dan al
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'dark') {
+                document.documentElement.classList.add('dark-theme');
+            }
+        {% endif %}
+    }
+    
+    initTheme();
+</script>
+    <style>
+       <style>
+    /* Yıldız Kümesi Arka Plan - Tüm Sayfa */
+    body {
+        position: relative;
+        overflow-x: hidden;
+    }
+
+    body::before {
+        content: '';
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(180deg, #0a0e27 0%, #1a1f3a 50%, #0f1729 100%);
+        z-index: -2;
+    }
+
+    /* Yıldızlar katman 1 - Küçük uzak yıldızlar */
+    .stars-layer-1 {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: -1;
+    }
+
+    .star {
+        position: absolute;
+        background: white;
+        border-radius: 50%;
+        animation: twinkle var(--duration) ease-in-out infinite;
+        animation-delay: var(--delay);
+    }
+
+    /* Küçük yıldızlar */
+    .star-small {
+        width: 2px;
+        height: 2px;
+        box-shadow: 0 0 3px rgba(255, 255, 255, 0.8);
+    }
+
+    /* Orta yıldızlar */
+    .star-medium {
+        width: 3px;
+        height: 3px;
+        box-shadow: 0 0 6px rgba(180, 123, 224, 0.9);
+    }
+
+    /* Büyük parlak yıldızlar */
+    .star-large {
+        width: 4px;
+        height: 4px;
+        box-shadow: 
+            0 0 10px rgba(224, 195, 252, 1),
+            0 0 20px rgba(155, 89, 208, 0.6);
+    }
+
+    /* Mor yıldızlar */
+    .star-purple {
+        background: #b77ee0;
+        box-shadow: 0 0 8px rgba(183, 126, 224, 1);
+    }
+
+    /* Mavi yıldızlar */
+    .star-blue {
+        background: #89b5f5;
+        box-shadow: 0 0 6px rgba(137, 181, 245, 1);
+    }
+
+    @keyframes twinkle {
+        0%, 100% {
+            opacity: 0.3;
+            transform: scale(1);
+        }
+        50% {
+            opacity: 1;
+            transform: scale(1.2);
+        }
+    }
+
+    /* Kayan yıldız animasyonu */
+    .shooting-star {
+        position: fixed;
+        width: 2px;
+        height: 2px;
+        background: white;
+        border-radius: 50%;
+        box-shadow: 0 0 10px rgba(255, 255, 255, 1);
+        animation: shoot 3s linear infinite;
+        z-index: -1;
+    }
+
+    @keyframes shoot {
+        0% {
+            transform: translate(0, 0) rotate(-45deg);
+            opacity: 1;
+        }
+        70% {
+            opacity: 1;
+        }
+        100% {
+            transform: translate(-300px, 300px) rotate(-45deg);
+            opacity: 0;
+        }
+    }
+
+    /* Nebula (bulutsu) efekti */
+    .nebula {
+        position: fixed;
+        border-radius: 50%;
+        filter: blur(60px);
+        opacity: 0.15;
+        z-index: -1;
+        animation: nebulaPulse 8s ease-in-out infinite;
+    }
+
+    .nebula-1 {
+        top: 10%;
+        left: 20%;
+        width: 400px;
+        height: 400px;
+        background: radial-gradient(circle, rgba(155, 89, 208, 0.4), transparent);
+    }
+
+    .nebula-2 {
+        top: 60%;
+        right: 15%;
+        width: 500px;
+        height: 500px;
+        background: radial-gradient(circle, rgba(180, 123, 224, 0.3), transparent);
+    }
+
+    .nebula-3 {
+        bottom: 10%;
+        left: 40%;
+        width: 350px;
+        height: 350px;
+        background: radial-gradient(circle, rgba(224, 195, 252, 0.25), transparent);
+    }
+
+    @keyframes nebulaPulse {
+        0%, 100% {
+            opacity: 0.1;
+            transform: scale(1);
+        }
+        50% {
+            opacity: 0.2;
+            transform: scale(1.1);
+        }
+    }
+
+    /* Ana içerik arka planını şeffaf yap */
+    body {
+        background: transparent !important;
+    }
+
+    .bg-gradient-to-br {
+        background: transparent !important;
+    }
+
+    /* Kartları biraz şeffaf yap */
+    .bg-white {
+        background: rgba(255, 255, 255, 0.95) !important;
+    }
+
+    /* Navbar */
+    nav.bg-white {
+        background: rgba(255, 255, 255, 0.98) !important;
+        backdrop-filter: blur(10px);
+    }
+
+    /* Float animasyonu */
+    @keyframes float {
+        0%, 100% { transform: translateY(0px); }
+        50% { transform: translateY(-20px); }
+    }
+    .float-animation {
+        animation: float 3s ease-in-out infinite;
+    }
+
+    /* Gradient bg */
+    .gradient-bg {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+    /* ============ KARANLIK MOD ============ */
+    
+    /* Karanlık mod ana değişkenler */
+    .dark-theme {
+        --bg-primary: #0f1419;
+        --bg-secondary: #1a1f2e;
+        --bg-card: #1e2433;
+        --text-primary: #e8eaed;
+        --text-secondary: #9aa0a6;
+        --border-color: #2d3748;
+    }
+
+    /* Body arka plan */
+    .dark-theme body {
+        background: linear-gradient(180deg, #0a0e27 0%, #1a1f3a 50%, #0f1729 100%) !important;
+        color: var(--text-primary);
+    }
+
+    /* Yıldızlar arka planı zaten karanlık */
+    .dark-theme body::before {
+        background: linear-gradient(180deg, #050812 0%, #0d1120 50%, #080d1a 100%);
+    }
+
+    /* Navbar */
+    .dark-theme nav.bg-white {
+        background: rgba(30, 36, 51, 0.95) !important;
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    .dark-theme nav a {
+        color: var(--text-primary) !important;
+    }
+
+    .dark-theme nav a:hover {
+        color: #b77ee0 !important;
+    }
+
+    /* Kartlar */
+    .dark-theme .bg-white {
+        background: rgba(30, 36, 51, 0.9) !important;
+        color: var(--text-primary);
+        border: 1px solid var(--border-color);
+    }
+
+    /* Input alanları */
+    .dark-theme input,
+    .dark-theme textarea,
+    .dark-theme select {
+        background: var(--bg-secondary) !important;
+        color: var(--text-primary) !important;
+        border-color: var(--border-color) !important;
+    }
+
+    .dark-theme input::placeholder,
+    .dark-theme textarea::placeholder {
+        color: var(--text-secondary);
+    }
+
+    .dark-theme input:focus,
+    .dark-theme textarea:focus,
+    .dark-theme select:focus {
+        border-color: #b77ee0 !important;
+        background: var(--bg-card) !important;
+    }
+
+    /* Başlıklar */
+    .dark-theme h1,
+    .dark-theme h2,
+    .dark-theme h3,
+    .dark-theme h4,
+    .dark-theme h5 {
+        color: var(--text-primary);
+    }
+
+    /* Paragraflar */
+    .dark-theme p {
+        color: var(--text-secondary);
+    }
+
+    /* Butonlar - Primary */
+    .dark-theme .bg-purple-600 {
+        background: linear-gradient(135deg, #7e3ab8 0%, #5a2a8a 100%) !important;
+    }
+
+    .dark-theme .bg-purple-600:hover {
+        background: linear-gradient(135deg, #9b59d0 0%, #7e3ab8 100%) !important;
+    }
+
+    /* Butonlar - Secondary */
+    .dark-theme .bg-gray-200 {
+        background: var(--bg-secondary) !important;
+        color: var(--text-primary) !important;
+    }
+
+    .dark-theme .bg-gray-50 {
+        background: var(--bg-secondary) !important;
+    }
+
+    /* Border renkler */
+    .dark-theme .border-gray-200,
+    .dark-theme .border-gray-300 {
+        border-color: var(--border-color) !important;
+    }
+
+    /* İstatistik kartları */
+    .dark-theme .bg-yellow-50,
+    .dark-theme .bg-green-50,
+    .dark-theme .bg-blue-50,
+    .dark-theme .bg-red-50,
+    .dark-theme .bg-purple-50 {
+        background: rgba(30, 36, 51, 0.6) !important;
+        border: 1px solid var(--border-color);
+    }
+
+    /* Footer */
+    .dark-theme footer {
+        background: rgba(30, 36, 51, 0.95) !important;
+        border-top: 1px solid var(--border-color);
+        color: var(--text-secondary);
+    }
+
+    /* Quiz cevap seçenekleri */
+    .dark-theme .answer-option {
+        background: var(--bg-secondary) !important;
+        border-color: var(--border-color) !important;
+        color: var(--text-primary);
+    }
+
+    .dark-theme .answer-option:hover {
+        background: var(--bg-card) !important;
+        border-color: #b77ee0 !important;
+    }
+
+    .dark-theme .answer-selected {
+        background: linear-gradient(135deg, #7e3ab8 0%, #5a2a8a 100%) !important;
+        color: white !important;
+    }
+
+    /* Messages */
+    .dark-theme .bg-green-100 {
+        background: rgba(34, 139, 34, 0.2) !important;
+        border-color: rgba(34, 139, 34, 0.4) !important;
+        color: #90ee90 !important;
+    }
+
+    .dark-theme .bg-red-100 {
+        background: rgba(220, 38, 38, 0.2) !important;
+        border-color: rgba(220, 38, 38, 0.4) !important;
+        color: #ff6b6b !important;
+    }
+
+    /* Text renkler */
+    .dark-theme .text-gray-700,
+    .dark-theme .text-gray-800 {
+        color: var(--text-primary) !important;
+    }
+
+    .dark-theme .text-gray-600,
+    .dark-theme .text-gray-500 {
+        color: var(--text-secondary) !important;
+    }
+
+    /* Gradient text */
+    .dark-theme .bg-gradient-to-r {
+        background: linear-gradient(135deg, #b77ee0 0%, #9b59d0 100%) !important;
+        -webkit-background-clip: text !important;
+        background-clip: text !important;
+    }
+
+    /* Shadow'lar */
+    .dark-theme .shadow-lg,
+    .dark-theme .shadow-2xl {
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5) !important;
+    }
+
+    /* Liderboard hover */
+    .dark-theme .hover\:bg-gray-50:hover {
+        background: var(--bg-card) !important;
+    }
+
+    /* Quiz sonuç kartları */
+    .dark-theme .border-green-300 {
+        border-color: rgba(34, 139, 34, 0.4) !important;
+    }
+
+    .dark-theme .bg-green-50 {
+        background: rgba(34, 139, 34, 0.1) !important;
+    }
+
+    .dark-theme .border-red-300 {
+        border-color: rgba(220, 38, 38, 0.4) !important;
+    }
+
+    .dark-theme .bg-red-50 {
+        background: rgba(220, 38, 38, 0.1) !important;
+    }
+
+    /* Smooth transition */
+    * {
+        transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+    }
+
+</style>
+    </style>
+
+</head>
+<body class="bg-gradient-to-br from-purple-50 to-blue-50 min-h-screen">
+    <!-- Yıldız Katmanları -->
+    <div class="stars-layer-1"></div>
+    
+    <!-- Nebula Efektleri -->
+    <div class="nebula nebula-1"></div>
+    <div class="nebula nebula-2"></div>
+    <div class="nebula nebula-3"></div>
+    
+    <!-- Kayan Yıldızlar -->
+    <div class="shooting-star" style="top: 20%; right: 80%; animation-delay: 2s;"></div>
+    <div class="shooting-star" style="top: 40%; right: 60%; animation-delay: 5s;"></div>
+    <div class="shooting-star" style="top: 60%; right: 40%; animation-delay: 8s;"></div>
+
+    <script>
+        // JavaScript ile rastgele yıldızlar oluştur
+        const starsContainer = document.querySelector('.stars-layer-1');
+        const starCount = 150;
+
+        for (let i = 0; i < starCount; i++) {
+            const star = document.createElement('div');
+            star.className = 'star';
+            
+            // Rastgele boyut
+            const sizeType = Math.random();
+            if (sizeType < 0.6) {
+                star.classList.add('star-small');
+            } else if (sizeType < 0.9) {
+                star.classList.add('star-medium');
+            } else {
+                star.classList.add('star-large');
+            }
+            
+            // Rastgele renk
+            const colorType = Math.random();
+            if (colorType < 0.7) {
+                // Beyaz yıldız (çoğunluk)
+            } else if (colorType < 0.85) {
+                star.classList.add('star-purple');
+            } else {
+                star.classList.add('star-blue');
+            }
+            
+            // Rastgele pozisyon
+            star.style.top = Math.random() * 100 + '%';
+            star.style.left = Math.random() * 100 + '%';
+            
+            // Rastgele animasyon süresi ve gecikmesi
+            star.style.setProperty('--duration', (2 + Math.random() * 4) + 's');
+            star.style.setProperty('--delay', Math.random() * 3 + 's');
+            
+            starsContainer.appendChild(star);
+        }
+    </script>
+    <!-- Navbar -->
+    <nav class="bg-white shadow-lg">
+        <div class="container mx-auto px-4">
+            <div class="flex justify-between items-center py-4">
+                <div class="flex items-center space-x-2">
+                    <span class="text-3xl">🚀</span>
+                    <a href="/" class="text-2xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 text-transparent bg-clip-text">
+                        KesfeT Lab
+                    </a>
+                </div>
+                
+                <div class="hidden md:flex space-x-6">
+                    {% if user.is_authenticated %}
+                        
+                        <a href="{% url 'dashboard' %}" class="text-gray-700 hover:text-purple-600 transition">📊 Dashboard</a>
+                        <a href="{% url 'daily_knowledge' %}" class="text-gray-700 hover:text-purple-600 transition">💡 Günün Bilgisi</a>
+                        <a href="{% url 'profile' %}" class="text-gray-700 hover:text-purple-600 transition">👤 Profil</a>
+                        <a href="{% url 'leaderboard' %}" class="text-gray-700 hover:text-purple-600 transition">🏆 Liderlik</a>
+                        <a href="{% url 'settings' %}" class="text-gray-700 hover:text-purple-600 transition">⚙️ Ayarlar</a>
+                        <a href="{% url 'chatbot' %}" class="text-gray-700 hover:text-purple-600 transition">🤖 AI Asistan</a>
+                        {% else %}
+                        <a href="/" class="text-gray-700 hover:text-purple-600 transition">🏠 Ana Sayfa</a>
+                        <a href="{% url 'about' %}" class="text-gray-700 hover:text-purple-600 transition">ℹ️ Hakkımızda</a>
+                        <a href="{% url 'contact' %}" class="text-gray-700 hover:text-purple-600 transition">📧 İletişim</a>
+                    {% endif %}
+                </div>
+                
+               <div class="flex items-center space-x-3">
+    {% if user.is_authenticated %}
+        <!-- Tema Değiştir Butonu -->
+<button onclick="toggleTheme()" class="text-2xl hover:scale-110 transition-transform" title="Temayı Değiştir" id="theme-toggle">
+    🌙
+</button>
+          <div class="w-12 h-12 rounded-full bg-gradient-to-br from-purple-400 to-blue-400 flex items-center justify-center text-2xl border-2 border-purple-300">
+            {{ user.avatar|default:"🚀" }}
+        </div>
+        
+        <div class="flex items-center space-x-2 bg-yellow-100 px-3 py-1 rounded-full">
+            <span class="text-xl">⭐</span>
+            <span class="font-bold text-yellow-700">{{ user.total_points }}</span>
+        </div>
+                        <a href="{% url 'logout' %}" class="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition">
+                        Çıkış
+                        </a>
+                    {% else %}
+        <!-- Tema Değiştir Butonu (Giriş Yapmamış) -->
+        <button onclick="toggleTheme()" class="text-2xl hover:scale-110 transition-transform mr-3" title="Temayı Değiştir" id="theme-toggle">
+            🌙
+        </button>
+        
+        <a href="{% url 'login' %}" class="text-purple-600 hover:text-purple-700 font-medium">Giriş</a>
+        <a href="{% url 'register' %}" class="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition">
+            Kayıt Ol
+        </a>
+    {% endif %}
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Messages -->
+    {% if messages %}
+        <div class="container mx-auto px-4 mt-4">
+            {% for message in messages %}
+                <div class="bg-{% if message.tags == 'success' %}green{% elif message.tags == 'error' %}red{% else %}blue{% endif %}-100 border border-{% if message.tags == 'success' %}green{% elif message.tags == 'error' %}red{% else %}blue{% endif %}-400 text-{% if message.tags == 'success' %}green{% elif message.tags == 'error' %}red{% else %}blue{% endif %}-700 px-4 py-3 rounded mb-4">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-8">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white mt-16 py-8 border-t">
+        <div class="container mx-auto px-4 text-center text-gray-600">
+            <p class="mb-2">🎨 KesfeT Lab - Çocuklar için Algoritma ve Kodlama</p>
+            <p class="text-sm">© 2025 Tüm hakları saklıdır.</p>
+        </div>
+    </footer>
+
+    {% block extra_js %}{% endblock %}
+<script>
+        // Tema değiştirme fonksiyonu
+        function toggleTheme() {
+            const html = document.documentElement;
+            const isDark = html.classList.contains('dark-theme');
+            const themeToggle = document.getElementById('theme-toggle');
+            
+            if (isDark) {
+                // Açık temaya geç
+                html.classList.remove('dark-theme');
+                localStorage.setItem('theme', 'light');
+                themeToggle.textContent = '🌙';
+                
+                {% if user.is_authenticated %}
+                // Giriş yapmış kullanıcı için veritabanına kaydet
+                fetch('{% url "toggle_theme" %}', {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': '{{ csrf_token }}',
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ dark_mode: false })
+                });
+                {% endif %}
+            } else {
+                // Karanlık temaya geç
+                html.classList.add('dark-theme');
+                localStorage.setItem('theme', 'dark');
+                themeToggle.textContent = '🌞';
+                
+                {% if user.is_authenticated %}
+                // Giriş yapmış kullanıcı için veritabanına kaydet
+                fetch('{% url "toggle_theme" %}', {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': '{{ csrf_token }}',
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ dark_mode: true })
+                });
+                {% endif %}
+            }
+        }
+        
+        // Sayfa yüklendiğinde doğru ikonu göster
+        window.addEventListener('DOMContentLoaded', function() {
+            const themeToggle = document.getElementById('theme-toggle');
+            if (themeToggle) {
+                const isDark = document.documentElement.classList.contains('dark-theme');
+                themeToggle.textContent = isDark ? '🌞' : '🌙';
+            }
+        });
+    </script>
+
+</body>
+
+</html>

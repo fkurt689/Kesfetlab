@@ -1,0 +1,214 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<!-- Welcome Banner -->
+<div class="bg-gradient-to-r from-purple-600 to-blue-600 rounded-2xl p-8 mb-8 text-white">
+    <h1 class="text-3xl font-bold mb-2">Hoş geldin, {{ user.username }}! 👋</h1>
+    <p class="text-purple-100">Bugün ne öğrenmek istersin?</p>
+</div>
+
+<!-- Stats Cards -->
+<div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+    <div class="bg-white rounded-xl p-6 shadow-lg">
+        <div class="flex items-center justify-between mb-2">
+            <span class="text-3xl">⭐</span>
+            <span class="text-2xl font-bold text-yellow-600">{{ user.total_points }}</span>
+        </div>
+        <p class="text-gray-600 font-medium">Toplam Puan</p>
+    </div>
+
+    <div class="bg-white rounded-xl p-6 shadow-lg">
+        <div class="flex items-center justify-between mb-2">
+            <span class="text-3xl">✅</span>
+            <span class="text-2xl font-bold text-green-600">{{ passed_quizzes }}</span>
+        </div>
+        <p class="text-gray-600 font-medium">Başarılı Quiz</p>
+    </div>
+
+    <div class="bg-white rounded-xl p-6 shadow-lg">
+        <div class="flex items-center justify-between mb-2">
+            <span class="text-3xl">📝</span>
+            <span class="text-2xl font-bold text-blue-600">{{ total_attempts }}</span>
+        </div>
+        <p class="text-gray-600 font-medium">Toplam Deneme</p>
+    </div>
+
+    <div class="bg-white rounded-xl p-6 shadow-lg">
+        <div class="flex items-center justify-between mb-2">
+            <span class="text-3xl">🔥</span>
+            <span class="text-2xl font-bold text-orange-600">{{ weekly_attempts }}</span>
+        </div>
+        <p class="text-gray-600 font-medium">Bu Hafta</p>
+    </div>
+</div>
+<!-- Günün Bilgisi Kartı -->
+<div class="bg-gradient-to-r from-purple-600 to-blue-600 rounded-2xl p-8 mb-8 text-white shadow-2xl">
+    <div class="flex items-center justify-between mb-6">
+        <div class="flex items-center space-x-4">
+            <div class="text-6xl">💡</div>
+            <div>
+                <h2 class="text-3xl font-bold mb-1">Günün Bilgisi</h2>
+                <p class="text-purple-100">Her gün yeni teknoloji bilgileri öğren!</p>
+            </div>
+        </div>
+        <div class="text-center bg-white bg-opacity-20 rounded-xl px-6 py-3">
+            <p class="text-sm text-purple-100">Bugün</p>
+            <p class="text-4xl font-bold">
+                {% if daily_cards_today %}{{ daily_cards_today }}{% else %}0{% endif %}/5
+            </p>
+        </div>
+    </div>
+    
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+        <div class="bg-white bg-opacity-10 rounded-xl p-4 text-center">
+            <p class="text-2xl font-bold mb-1">{{ total_cards_read|default:0 }}</p>
+            <p class="text-sm text-purple-100">Toplam Okunan</p>
+        </div>
+        <div class="bg-white bg-opacity-10 rounded-xl p-4 text-center">
+            <p class="text-2xl font-bold mb-1">{{ cards_remaining|default:"?" }}</p>
+            <p class="text-sm text-purple-100">Kalan Kart</p>
+        </div>
+        <div class="bg-white bg-opacity-10 rounded-xl p-4 text-center">
+            <p class="text-2xl font-bold mb-1">+5</p>
+            <p class="text-sm text-purple-100">Puan/Kart</p>
+        </div>
+    </div>
+    
+    {% if daily_cards_today >= 5 %}
+        <div class="bg-green-500 bg-opacity-90 rounded-xl p-6 text-center">
+            <p class="text-2xl font-bold mb-2">🎉 Tebrikler!</p>
+            <p class="text-lg mb-1">Bugünün tüm bilgi kartlarını okudun!</p>
+            <p class="text-sm text-green-100">Yarın yeni bilgiler için geri gel!</p>
+        </div>
+    {% else %}
+        <a href="{% url 'daily_knowledge' %}" class="block bg-white text-purple-600 text-center py-4 rounded-xl font-bold text-lg hover:shadow-2xl transition transform hover:scale-105">
+            📖 Bugünkü Bilgileri Oku → 
+            {% if daily_cards_today %}
+                ({{ 5|add:daily_cards_today|add:"-5"|add:"0" }} kart kaldı)
+            {% else %}
+                (5 kart bekliyor)
+            {% endif %}
+        </a>
+    {% endif %}
+</div>
+<!-- Main Content -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+    <!-- Left Column -->
+    <div class="lg:col-span-2 space-y-8">
+        <!-- Progress -->
+        <div class="bg-white rounded-xl p-6 shadow-lg">
+            <h2 class="text-2xl font-bold mb-4 text-gray-800">📊 İlerleme</h2>
+            <div class="mb-4">
+                <div class="flex justify-between mb-2">
+                    <span class="text-gray-700 font-medium">Başarı Oranı</span>
+                    <span class="text-purple-600 font-bold">%{{ success_rate|floatformat:0 }}</span>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-4">
+                    <div class="bg-gradient-to-r from-purple-500 to-blue-500 h-4 rounded-full transition-all duration-500" 
+                         style="width: {{ success_rate }}%"></div>
+                </div>
+            </div>
+            <p class="text-gray-600 text-sm">
+                {{ passed_quizzes }} / {{ total_attempts }} quiz'i başarıyla tamamladın!
+            </p>
+        </div>
+
+        <!-- Recent Quizzes -->
+        <div class="bg-white rounded-xl p-6 shadow-lg">
+            <h2 class="text-2xl font-bold mb-4 text-gray-800">📝 Son Denemeler</h2>
+            {% if recent_attempts %}
+                <div class="space-y-3">
+                    {% for attempt in recent_attempts %}
+                    <div class="border-2 border-gray-100 rounded-lg p-4 hover:border-purple-300 transition">
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <h4 class="font-bold text-gray-800">{{ attempt.quiz.title }}</h4>
+                                <p class="text-sm text-gray-500">{{ attempt.completed_at|date:"d M Y, H:i" }}</p>
+                            </div>
+                            <div class="text-right">
+                                {% if attempt.is_passed %}
+                                    <span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm font-bold">
+                                        ✅ %{{ attempt.percentage|floatformat:0 }}
+                                    </span>
+                                {% else %}
+                                    <span class="bg-red-100 text-red-700 px-3 py-1 rounded-full text-sm font-bold">
+                                        ❌ %{{ attempt.percentage|floatformat:0 }}
+                                    </span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p class="text-gray-500 text-center py-8">Henüz quiz çözmedin. Hadi başlayalım! 🚀</p>
+            {% endif %}
+            <a href="{% url 'quiz_list' %}" class="block mt-4 text-center text-purple-600 font-bold hover:text-purple-700">
+                Tüm Quiz'leri Gör →
+            </a>
+        </div>
+    </div>
+
+    <!-- Right Column -->
+    <div class="space-y-8">
+        <!-- Badges -->
+        <div class="bg-white rounded-xl p-6 shadow-lg">
+            <h2 class="text-2xl font-bold mb-4 text-gray-800">🏆 Rozetler</h2>
+            {% if user_badges %}
+                <div class="grid grid-cols-3 gap-3">
+                    {% for user_badge in user_badges %}
+                    <div class="text-center p-3 bg-gradient-to-br from-yellow-50 to-orange-50 rounded-lg" title="{{ user_badge.badge.description }}">
+                        <div class="text-4xl mb-1">{{ user_badge.badge.icon }}</div>
+                        <p class="text-xs font-medium text-gray-700">{{ user_badge.badge.name }}</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="text-center py-8">
+                    <div class="text-5xl mb-3">🎯</div>
+                    <p class="text-gray-500">Henüz rozet kazanmadın</p>
+                    <p class="text-sm text-gray-400 mt-2">Quiz'leri çöz ve rozetler kazan!</p>
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="bg-gradient-to-br from-purple-100 to-blue-100 rounded-xl p-6">
+            <h3 class="font-bold text-lg mb-4 text-gray-800">🚀 Hızlı İşlemler</h3>
+            <div class="space-y-3">
+                <a href="{% url 'quiz_list' %}" class="block bg-white text-center py-3 rounded-lg font-medium hover:shadow-md transition">
+                    📝 Yeni Quiz Çöz
+                </a>
+                <a href="{% url 'profile' %}" class="block bg-white text-center py-3 rounded-lg font-medium hover:shadow-md transition">
+                    👤 Profilim
+                </a>
+                <a href="{% url 'leaderboard' %}" class="block bg-white text-center py-3 rounded-lg font-medium hover:shadow-md transition">
+                    🏆 Liderlik Tablosu
+                </a>
+            </div>
+        </div>
+
+        <!-- Activity -->
+        {% if recent_activities %}
+        <div class="bg-white rounded-xl p-6 shadow-lg">
+            <h2 class="text-xl font-bold mb-4 text-gray-800">📅 Son Aktiviteler</h2>
+            <div class="space-y-3">
+                {% for activity in recent_activities|slice:":5" %}
+                <div class="flex items-start space-x-3 text-sm">
+                    <span>
+                        {% if activity.activity_type == 'quiz_completed' %}🎯
+                        {% elif activity.activity_type == 'badge_earned' %}🏆
+                        {% else %}✨{% endif %}
+                    </span>
+                    <div class="flex-1">
+                        <p class="text-gray-700">{{ activity.description }}</p>
+                        <p class="text-gray-400 text-xs">{{ activity.created_at|timesince }} önce</p>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

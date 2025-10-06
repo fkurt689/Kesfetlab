@@ -1,0 +1,106 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto">
+    <!-- Profil Header -->
+    <div class="bg-gradient-to-r from-purple-600 to-blue-600 rounded-2xl p-8 mb-8 text-white">
+        <div class="flex items-center space-x-6">
+            <div class="w-32 h-32 rounded-full bg-gradient-to-br from-purple-100 to-blue-100 flex items-center justify-center text-7xl border-4 border-white shadow-lg">
+            {{ user.avatar|default:"🚀" }}
+        </div>
+            <div class="w-24 h-24 bg-white rounded-full flex items-center justify-center text-4xl font-bold text-purple-600">
+                {{ user.username.0|upper }}
+            </div>
+            <div>
+                <h1 class="text-3xl font-bold mb-2">{{ user.username }}</h1>
+                <p class="text-purple-100">{{ user.get_role_display }}</p>
+                {% if user.email %}
+                <p class="text-purple-200 text-sm">📧 {{ user.email }}</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- İstatistikler -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+        <div class="bg-white rounded-xl p-6 shadow-lg text-center">
+            <div class="text-4xl mb-2">⭐</div>
+            <div class="text-3xl font-bold text-yellow-600">{{ user.total_points }}</div>
+            <div class="text-gray-600 text-sm">Toplam Puan</div>
+        </div>
+
+        <div class="bg-white rounded-xl p-6 shadow-lg text-center">
+            <div class="text-4xl mb-2">📝</div>
+            <div class="text-3xl font-bold text-blue-600">{{ total_attempts }}</div>
+            <div class="text-gray-600 text-sm">Toplam Quiz</div>
+        </div>
+
+        <div class="bg-white rounded-xl p-6 shadow-lg text-center">
+            <div class="text-4xl mb-2">✅</div>
+            <div class="text-3xl font-bold text-green-600">{{ passed_quizzes }}</div>
+            <div class="text-gray-600 text-sm">Başarılı</div>
+        </div>
+
+        <div class="bg-white rounded-xl p-6 shadow-lg text-center">
+            <div class="text-4xl mb-2">📊</div>
+            <div class="text-3xl font-bold text-purple-600">%{{ avg_score|floatformat:0 }}</div>
+            <div class="text-gray-600 text-sm">Ortalama</div>
+        </div>
+    </div>
+
+    <!-- Rozetler -->
+    <div class="bg-white rounded-xl p-8 shadow-lg mb-8">
+        <h2 class="text-2xl font-bold mb-6 text-gray-800">🏆 Rozetlerim</h2>
+        
+        {% if user_badges %}
+        <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6">
+            {% for user_badge in user_badges %}
+            <div class="text-center group cursor-pointer">
+                <div class="bg-gradient-to-br from-yellow-50 to-orange-50 rounded-2xl p-6 mb-3 transform transition hover:scale-110 hover:shadow-xl">
+                    <div class="text-6xl mb-2">{{ user_badge.badge.icon }}</div>
+                </div>
+                <h3 class="font-bold text-gray-800 text-sm mb-1">{{ user_badge.badge.name }}</h3>
+                <p class="text-xs text-gray-500 mb-1">{{ user_badge.badge.description }}</p>
+                <p class="text-xs text-gray-400">{{ user_badge.earned_at|date:"d M Y" }}</p>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="text-center py-16">
+            <div class="text-8xl mb-4">🎯</div>
+            <p class="text-xl text-gray-600 mb-2">Henüz rozet kazanmadın</p>
+            <p class="text-gray-500">Quiz'leri çöz ve rozetler kazan!</p>
+            <a href="{% url 'quiz_list' %}" class="inline-block mt-6 bg-purple-600 text-white px-8 py-3 rounded-lg font-medium hover:bg-purple-700 transition">
+                Quiz Çözmeye Başla →
+            </a>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Seviye ve İlerleme -->
+    <div class="bg-white rounded-xl p-8 shadow-lg">
+        <h2 class="text-2xl font-bold mb-6 text-gray-800">🎮 Seviye ve İlerleme</h2>
+        <div class="flex items-center space-x-6">
+            <div class="text-6xl">🌟</div>
+            <div class="flex-1">
+                <div class="flex justify-between mb-2">
+                    <span class="font-bold text-2xl text-purple-600">Seviye {{ user.level }}</span>
+                    <span class="text-gray-600">{{ user.total_points }} Puan</span>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-4">
+                    <div class="bg-gradient-to-r from-purple-500 to-blue-500 h-4 rounded-full transition-all" 
+                         style="width: {% widthratio user.total_points 1000 100 %}%"></div>
+                </div>
+                <p class="text-sm text-gray-500 mt-2">Daha fazla quiz çöz ve seviyeni yükselt!</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Geri Dön Butonu -->
+    <div class="text-center mt-8">
+        <a href="{% url 'dashboard' %}" class="inline-block bg-purple-600 text-white px-8 py-3 rounded-lg font-medium hover:bg-purple-700 transition">
+            ← Dashboard'a Dön
+        </a>
+    </div>
+</div>
+{% endblock %}

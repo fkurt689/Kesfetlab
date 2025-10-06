@@ -1,0 +1,126 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto">
+    <div class="bg-white rounded-2xl shadow-2xl p-8">
+        
+        <!-- Sonuç Başlığı -->
+        <div class="text-center mb-8">
+            {% if attempt.is_passed %}
+                <div class="text-8xl mb-4">🎉</div>
+                <h1 class="text-4xl font-bold text-green-600 mb-2">Tebrikler!</h1>
+                <p class="text-xl text-gray-600">Quiz'i Başarıyla Geçtin!</p>
+            {% else %}
+                <div class="text-8xl mb-4">😔</div>
+                <h1 class="text-4xl font-bold text-red-600 mb-2">Başarısız</h1>
+                <p class="text-xl text-gray-600">Tekrar deneyebilirsin!</p>
+            {% endif %}
+        </div>
+
+        <!-- Skor Kartı -->
+        <div class="bg-gradient-to-r from-purple-100 to-blue-100 rounded-2xl p-8 mb-8">
+            <div class="text-center">
+                <div class="text-7xl font-bold {% if attempt.is_passed %}text-green-600{% else %}text-red-600{% endif %} mb-2">
+                    %{{ attempt.percentage|floatformat:0 }}
+                </div>
+                <p class="text-gray-700 text-lg">{{ attempt.score }} / {{ attempt.max_score }} Puan</p>
+            </div>
+        </div>
+
+        <!-- İstatistikler -->
+        <div class="grid grid-cols-3 gap-4 mb-8">
+            <div class="bg-green-50 rounded-xl p-6 text-center">
+                <div class="text-4xl mb-2">✅</div>
+                <div class="text-3xl font-bold text-green-600">
+                    {{ correct_count }}
+                </div>
+                <div class="text-sm text-gray-600">Doğru</div>
+            </div>
+            
+            <div class="bg-red-50 rounded-xl p-6 text-center">
+                <div class="text-4xl mb-2">❌</div>
+                <div class="text-3xl font-bold text-red-600">
+                    {{ wrong_count }}
+                </div>
+                <div class="text-sm text-gray-600">Yanlış</div>
+            </div>
+            
+            {% if attempt.is_passed %}
+            <div class="bg-yellow-50 rounded-xl p-6 text-center">
+                <div class="text-4xl mb-2">⭐</div>
+                <div class="text-3xl font-bold text-yellow-600">+{{ attempt.quiz.points_reward }}</div>
+                <div class="text-sm text-gray-600">Puan Kazandın</div>
+            </div>
+            {% else %}
+            <div class="bg-gray-50 rounded-xl p-6 text-center">
+                <div class="text-4xl mb-2">🎯</div>
+                <div class="text-3xl font-bold text-gray-600">%{{ attempt.quiz.passing_score }}</div>
+                <div class="text-sm text-gray-600">Geçme Notu</div>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Cevap Detayları -->
+        <div class="mb-8">
+            <h2 class="text-2xl font-bold mb-4 text-gray-800">📝 Cevap Detayları</h2>
+            <div class="space-y-4">
+                {% for user_answer in user_answers %}
+                <div class="border-2 {% if user_answer.is_correct %}border-green-300 bg-green-50{% else %}border-red-300 bg-red-50{% endif %} rounded-xl p-6">
+                    <div class="flex items-start mb-3">
+                        <div class="{% if user_answer.is_correct %}bg-green-600{% else %}bg-red-600{% endif %} text-white rounded-full w-8 h-8 flex items-center justify-center font-bold mr-3">
+                            {{ forloop.counter }}
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="font-bold text-gray-800 mb-2">{{ user_answer.question.question_text }}</h3>
+                            
+                            <div class="space-y-2">
+                                <div class="flex items-center">
+                                    <span class="text-sm font-medium text-gray-600 w-32">Senin Cevabın:</span>
+                                    <span class="{% if user_answer.is_correct %}text-green-700{% else %}text-red-700{% endif %} font-medium">
+                                        {{ user_answer.selected_answer.answer_text }}
+                                        {% if user_answer.is_correct %}✅{% else %}❌{% endif %}
+                                    </span>
+                                </div>
+                                
+                                {% if not user_answer.is_correct %}
+                                <div class="flex items-center">
+                                    <span class="text-sm font-medium text-gray-600 w-32">Doğru Cevap:</span>
+                                    <span class="text-green-700 font-medium">
+                                        {% for answer in user_answer.question.answers.all %}
+                                            {% if answer.is_correct %}{{ answer.answer_text }}{% endif %}
+                                        {% endfor %}
+                                        ✅
+                                    </span>
+                                </div>
+                                {% endif %}
+                            </div>
+                            
+                            {% if user_answer.question.explanation %}
+                            <div class="mt-3 p-3 bg-blue-50 rounded-lg">
+                                <p class="text-sm text-blue-800">
+                                    <strong>💡 Açıklama:</strong> {{ user_answer.question.explanation }}
+                                </p>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Butonlar -->
+        <div class="flex gap-4 justify-center">
+            <a href="{% url 'quiz_detail' attempt.quiz.id %}" class="bg-gray-200 text-gray-700 px-8 py-3 rounded-lg font-medium hover:bg-gray-300 transition">
+                Tekrar Dene
+            </a>
+            <a href="{% url 'quiz_list' %}" class="bg-purple-600 text-white px-8 py-3 rounded-lg font-medium hover:bg-purple-700 transition">
+                Diğer Quiz'ler
+            </a>
+            <a href="{% url 'dashboard' %}" class="bg-gradient-to-r from-purple-600 to-blue-600 text-white px-8 py-3 rounded-lg font-medium hover:shadow-lg transition">
+                Dashboard'a Dön
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

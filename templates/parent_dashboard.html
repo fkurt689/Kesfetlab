@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="bg-gradient-to-r from-purple-600 to-blue-600 rounded-2xl p-8 mb-8 text-white">
+    <h1 class="text-3xl font-bold mb-2">Veli Dashboard 👨‍👩‍👧</h1>
+    <p class="text-purple-100">Çocuklarınızın gelişimini takip edin</p>
+</div>
+
+{% if children_data %}
+    <div class="space-y-6">
+        {% for child_info in children_data %}
+        <div class="bg-white rounded-xl p-6 shadow-lg">
+            <h2 class="text-2xl font-bold mb-4">👤 {{ child_info.child.username }}</h2>
+            
+            <div class="grid grid-cols-3 gap-4 mb-4">
+                <div class="text-center p-4 bg-blue-50 rounded-lg">
+                    <div class="text-3xl font-bold text-blue-600">{{ child_info.total_attempts }}</div>
+                    <div class="text-sm text-gray-600">Toplam Deneme</div>
+                </div>
+                <div class="text-center p-4 bg-green-50 rounded-lg">
+                    <div class="text-3xl font-bold text-green-600">{{ child_info.passed_quizzes }}</div>
+                    <div class="text-sm text-gray-600">Başarılı Quiz</div>
+                </div>
+                <div class="text-center p-4 bg-purple-50 rounded-lg">
+                    <div class="text-3xl font-bold text-purple-600">%{{ child_info.success_rate|floatformat:0 }}</div>
+                    <div class="text-sm text-gray-600">Başarı Oranı</div>
+                </div>
+            </div>
+            
+            {% if child_info.recent_quiz %}
+            <div class="border-t pt-4">
+                <p class="text-sm text-gray-600">Son Quiz:</p>
+                <p class="font-bold">{{ child_info.recent_quiz.quiz.title }} - %{{ child_info.recent_quiz.percentage|floatformat:0 }}</p>
+            </div>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <div class="text-center py-16">
+        <div class="text-6xl mb-4">👨‍👩‍👧</div>
+        <p class="text-xl text-gray-600">Henüz çocuk hesabı bağlanmamış</p>
+        <p class="text-gray-500 mt-2">Admin panelden ParentStudent ilişkisi ekleyin</p>
+    </div>
+{% endif %}
+{% endblock %}

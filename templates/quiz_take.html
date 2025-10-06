@@ -1,0 +1,93 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<!-- Header -->
+<div class="bg-white shadow-lg mb-6">
+    <div class="container mx-auto px-4 py-4">
+        <div class="flex justify-between items-center">
+            <div>
+                <h1 class="text-2xl font-bold text-gray-800">{{ quiz.title }}</h1>
+                <p class="text-gray-600">Zorluk: <span class="font-medium">{{ quiz.get_difficulty_display }}</span></p>
+            </div>
+            <div class="flex items-center space-x-4">
+                {% if quiz.time_limit %}
+                <div class="bg-blue-100 px-4 py-2 rounded-full">
+                    <span class="text-blue-800 font-bold">⏱️ {{ quiz.time_limit }}:00</span>
+                </div>
+                {% endif %}
+                <div class="bg-yellow-100 px-4 py-2 rounded-full">
+                    <span class="text-yellow-800 font-bold">⭐ {{ quiz.points_reward }} Puan</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Quiz Form -->
+<div class="max-w-4xl mx-auto">
+    <div class="bg-white rounded-2xl shadow-2xl p-8">
+        <form method="POST" id="quiz-form">
+            {% csrf_token %}
+            
+            <div class="space-y-8">
+                {% for question in questions %}
+                <div class="border-b pb-8 last:border-b-0">
+                    <div class="flex items-start mb-4">
+                        <div class="bg-purple-600 text-white rounded-full w-10 h-10 flex items-center justify-center font-bold text-lg mr-4">
+                            {{ forloop.counter }}
+                        </div>
+                        <div class="flex-1">
+                            <h2 class="text-xl font-bold text-gray-800 mb-2">
+                                {{ question.question_text }}
+                            </h2>
+                            {% if question.image %}
+                            <img src="{{ question.image.url }}" alt="Soru görseli" class="rounded-lg mb-4 max-w-md">
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="ml-14 space-y-3">
+                        {% if question.question_type == 'true_false' %}
+                            <!-- Doğru/Yanlış -->
+                            {% for answer in question.answers.all %}
+                            <label class="flex items-center p-4 border-2 border-gray-200 rounded-xl hover:border-purple-400 cursor-pointer transition">
+                                <input type="radio" name="question_{{ question.id }}" value="{{ answer.id }}" class="w-5 h-5 text-purple-600" required>
+                                <span class="ml-4 text-lg">{{ answer.answer_text }}</span>
+                            </label>
+                            {% endfor %}
+                        {% else %}
+                            <!-- Çoktan Seçmeli -->
+                            {% for answer in question.answers.all %}
+                            <label class="flex items-center p-4 border-2 border-gray-200 rounded-xl hover:border-purple-400 cursor-pointer transition">
+                                <input type="radio" name="question_{{ question.id }}" value="{{ answer.id }}" class="w-5 h-5 text-purple-600" required>
+                                <span class="ml-4 text-lg">{{ answer.answer_text }}</span>
+                            </label>
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <div class="mt-8 flex justify-end">
+                <button type="submit" class="bg-gradient-to-r from-purple-600 to-blue-600 text-white px-10 py-4 rounded-xl font-bold text-lg hover:shadow-2xl transition transform hover:scale-105">
+                    Quiz'i Bitir 🎉
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+// Opsiyonel: Sayfa yenilenmeden önce uyarı
+window.addEventListener('beforeunload', function (e) {
+    e.preventDefault();
+    e.returnValue = '';
+});
+
+// Form gönderildiğinde uyarıyı kaldır
+document.getElementById('quiz-form').addEventListener('submit', function() {
+    window.removeEventListener('beforeunload', function(){});
+});
+</script>
+{% endblock %}
