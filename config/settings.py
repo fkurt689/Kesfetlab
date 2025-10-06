@@ -13,6 +13,11 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 from pathlib import Path
 
 import os
+from pathlib import Path
+from dotenv import load_dotenv  # ✅ YENİ
+
+# .env dosyası
+load_dotenv()  
 
 # Gizli bilgileri .env dosyasından al
 SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-yedek-anahtar')

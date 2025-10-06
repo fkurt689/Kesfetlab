@@ -657,7 +657,7 @@ def daily_knowledge(request):
     return render(request, 'daily_knowledge.html', context)
 
 @login_required
-def chatbot(request):
+def chatbot_view(request):
     if request.method == 'POST':
         try:
             user_message = request.POST.get('message', '').strip()
@@ -671,6 +671,10 @@ def chatbot(request):
             from django.conf import settings as django_settings
             api_key = django_settings.GEMINI_API_KEY
             
+            # ✅ TEST: API key'i konsola yazdır
+            print(f"DEBUG - API KEY: {api_key}")
+            print(f"DEBUG - API KEY uzunluğu: {len(api_key)}")
+            
             # Gemini AI yapılandırması
             genai.configure(api_key=api_key)
             
@@ -681,10 +685,10 @@ def chatbot(request):
             system_prompt = f"""Sen KesfetBot'sun 🤖 - Çocuklar için eğlenceli AI asistan.
 
 ÖNEMLI KURALLAR:
-- Cevapların MAKSIMUM 2-3 CÜMLE olmalı
+- Cevapların MAKSIMUM 3-4 CÜMLE olmalı
 - Çok kısa ve öz açıkla
 - Sade Türkçe kullan
-- 1-2 emoji yeterli
+- 2-3 emoji yeterli
 
 Kullanıcı: {request.user.username} ({request.user.total_points} puan)
 
